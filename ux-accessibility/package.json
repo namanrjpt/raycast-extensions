@@ -1,0 +1,54 @@
+{
+  "$schema": "https://www.raycast.com/schemas/extension.json",
+  "name": "ux-accessibility",
+  "title": "ux-accessibility",
+  "description": "Assess and generate complete UI Accessibility report by taking screenshot of either whole screen or a part of the UI.",
+  "icon": "extension-icon.png",
+  "author": "kushalwithk",
+  "owner": "raycast-extensions",
+  "categories": [
+    "Productivity"
+  ],
+  "license": "MIT",
+  "commands": [
+    {
+      "name": "capture-full-screen",
+      "title": "Capture Full Screen",
+      "subtitle": "Capture entire screen behind Raycast window",
+      "description": "Capture full screen of the UI",
+      "mode": "view"
+    },
+    {
+      "name": "capture-area",
+      "title": "Capture Area",
+      "subtitle": "Capture specific area behind Raycast window",
+      "description": "Manually capture specific area of the UI",
+      "mode": "view"
+    }
+  ],
+  "dependencies": {
+    "@raycast/api": "^1.88.4",
+    "@raycast/utils": "^1.17.0",
+    "browser-image-compression": "^2.0.2",
+    "cloudinary": "^2.5.1",
+    "screenshot-desktop": "^1.15.0"
+  },
+  "devDependencies": {
+    "@raycast/eslint-config": "^1.0.11",
+    "@types/imagemin": "^9.0.0",
+    "@types/node": "20.8.10",
+    "@types/react": "18.3.3",
+    "@types/screenshot-desktop": "^1.12.3",
+    "eslint": "^8.57.0",
+    "prettier": "^3.3.3",
+    "typescript": "^5.4.5"
+  },
+  "scripts": {
+    "build": "ray build",
+    "dev": "ray develop",
+    "fix-lint": "ray lint --fix",
+    "lint": "ray lint",
+    "prepublishOnly": "echo \"\\n\\nIt seems like you are trying to publish the Raycast extension to npm.\\n\\nIf you did intend to publish it to npm, remove the \\`prepublishOnly\\` script and rerun \\`npm publish\\` again.\\nIf you wanted to publish it to the Raycast Store instead, use \\`npm run publish\\` instead.\\n\\n\" && exit 1",
+    "publish": "npx @raycast/api@latest publish"
+  }
+}
