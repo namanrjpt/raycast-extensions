@@ -2,7 +2,6 @@ import { Detail, showHUD, environment, AI } from "@raycast/api";
 import { exec } from "child_process";
 import { useState, useEffect } from "react";
 import { join } from "path";
-import { v2 as cloudinary } from "cloudinary";
 import { uploadToCloudinary } from "./utils";
 
 process.env.PATH = "/usr/sbin:/usr/bin:/bin:/usr/local/bin";
@@ -23,11 +22,12 @@ export default function CaptureAreaCommand() {
 
   const captureAreaScreenshot = () => {
     if (inBetweenCapture) return;
-
     const tempFilePath = join(process.env.TMPDIR || "/tmp", `uic-area-ss-${new Date().getTime()}.png`);
     showHUD("Please select the area to capture...");
     setInBetweenCapture(true);
+    console.log("Executing Capture Area");
     exec(`screencapture -i ${tempFilePath}`, (err) => {
+      console.log("Finished executing Capture area!");
       setInBetweenCapture(false);
       if (err) {
         console.error("Error capturing screenshot:", err);
@@ -41,12 +41,12 @@ export default function CaptureAreaCommand() {
   };
 
   useEffect(() => {
-    // if(!environment.canAccess(AI)) {
-    //   return;
-    // }
-
     if (!inBetweenCapture) captureAreaScreenshot();
   }, []);
+
+  useEffect(() => {
+    console.log(`In Between Capture ${inBetweenCapture}`);
+  }, [inBetweenCapture])
 
   const readFile = (filePath: string): Promise<Buffer> => {
     return new Promise((resolve, reject) => {
