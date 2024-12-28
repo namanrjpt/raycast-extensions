@@ -19,18 +19,21 @@ export default function CaptureAreaCommand() {
   ]);
 
   const [currentLoadingText, setCurrentLoadingText] = useState(0);
+  const [inBetweenCapture, setInBetweenCapture] = useState(false);
 
   const captureAreaScreenshot = () => {
+    if (inBetweenCapture) return;
+
     const tempFilePath = join(process.env.TMPDIR || "/tmp", `uic-area-ss-${new Date().getTime()}.png`);
-    // Use `screencapture` with `-i` for interactive area selection
     showHUD("Please select the area to capture...");
+    setInBetweenCapture(true);
     exec(`screencapture -i ${tempFilePath}`, (err) => {
+      setInBetweenCapture(false);
       if (err) {
         console.error("Error capturing screenshot:", err);
         setError("Failed to capture the screenshot. Please try again.");
         return;
       }
-
       setImagePath(`file://${tempFilePath}`);
       exec("open -a Raycast");
       analyzeImage(tempFilePath);
@@ -42,7 +45,7 @@ export default function CaptureAreaCommand() {
     //   return;
     // }
 
-    captureAreaScreenshot();
+    if (!inBetweenCapture) captureAreaScreenshot();
   }, []);
 
   const readFile = (filePath: string): Promise<Buffer> => {
@@ -145,7 +148,7 @@ export default function CaptureAreaCommand() {
       />
     );
   }
-  
+
   return report ? (
     <Detail
       markdown={`![Screenshot](${imagePath})`}
