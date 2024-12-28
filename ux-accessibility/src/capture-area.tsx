@@ -20,26 +20,27 @@ export default function CaptureAreaCommand() {
 
   const [currentLoadingText, setCurrentLoadingText] = useState(0);
 
+  const captureAreaScreenshot = () => {
+    const tempFilePath = join(process.env.TMPDIR || "/tmp", `uic-area-ss-${new Date().getTime()}.png`);
+    // Use `screencapture` with `-i` for interactive area selection
+    showHUD("Please select the area to capture...");
+    exec(`screencapture -i ${tempFilePath}`, (err) => {
+      if (err) {
+        console.error("Error capturing screenshot:", err);
+        setError("Failed to capture the screenshot. Please try again.");
+        return;
+      }
+
+      setImagePath(`file://${tempFilePath}`);
+      exec("open -a Raycast");
+      analyzeImage(tempFilePath);
+    });
+  };
+
   useEffect(() => {
     // if(!environment.canAccess(AI)) {
     //   return;
     // }
-    const captureAreaScreenshot = () => {
-      const tempFilePath = join(process.env.TMPDIR || "/tmp", `uic-area-ss-${new Date().getTime()}.png`);
-      // Use `screencapture` with `-i` for interactive area selection
-      showHUD("Please select the area to capture...");
-      exec(`screencapture -i ${tempFilePath}`, (err) => {
-        if (err) {
-          console.error("Error capturing screenshot:", err);
-          setError("Failed to capture the screenshot. Please try again.");
-          return;
-        }
-
-        setImagePath(`file://${tempFilePath}`);
-        exec("open -a Raycast");
-        analyzeImage(tempFilePath);
-      });
-    };
 
     captureAreaScreenshot();
   }, []);
@@ -66,26 +67,35 @@ export default function CaptureAreaCommand() {
       console.log(uploadedImgUrl);
 
       // Create the prompt for Gemini
-      const prompt = `Analyze the following image for accessibility issues: 
-      [Image located at: ${uploadedImgUrl}]
+      const prompt = `
+      STRICTLY DONT RETURN MARKUP RETURN PLAIN TEXT
 
-      Provide a report with the following sections:
-      - **Text Content:** 
-          - Readability 
-          - Issues (e.g., font size, color contrast, language)
-      - **Contrast:**
-          - Issues (e.g., insufficient color contrast between text and background)
-      - **Missing Alt Text:**
-          - List of elements missing alt text
-      - **Visual Elements:**
-          - Issues (e.g., excessive animations, moving elements, flickering)`;
+      As per wcag UI accessibility standards, rate this UI seen on this image on
+      the following parameters and show in requested format:
+      The Image: ${uploadedImgUrl}
+      
+      Parameters:
+      1. Color contrast
+      2. Focus visibility
+      3. Semantic structure
+      4. Clear and descriptive links
+      5. Langauge of the page
+      6. Responsive and reflow
 
-      // const prompt = `Analyze the following image for accessibility issues: 
+      STRICTlY keep the title of the parameters: {PARAMS}
+
+      Format:
+      {key}:{percentage_score} - {3-4 Word Comment}
+      {key} will be a the first letter of words of the parameters
+      {percentage_score} will be a percentage on how much the UI follows that parameter
+      `;
+
+      // const prompt = `Analyze the following image for accessibility issues:
       // [Image: data:image/png;base64,${imageBase64}]
 
       // Provide a report with the following sections:
-      // - **Text Content:** 
-      //     - Readability 
+      // - **Text Content:**
+      //     - Readability
       //     - Issues (e.g., font size, color contrast, language)
       // - **Contrast:**
       //     - Issues (e.g., insufficient color contrast between text and background)
@@ -94,15 +104,13 @@ export default function CaptureAreaCommand() {
       // - **Visual Elements:**
       //     - Issues (e.g., excessive animations, moving elements, flickering)`;
 
-      const response = await AI.ask(prompt, {
-        model: "anthropic-claude-opus",
-      });
+      const response = await AI.ask(prompt);
       setReport(response);
     } catch (err) {
       console.error("Error analyzing image:", err);
       setError("Failed to analyze the image. Please try again.");
     } finally {
-      clearTimeout(timeoutId)
+      clearTimeout(timeoutId);
     }
   };
 
@@ -123,20 +131,38 @@ export default function CaptureAreaCommand() {
       <Detail
         isLoading
         markdown={loadingTexts[currentLoadingText]}
-        navigationTitle="Assess Full Screenshot's UI"
+        navigationTitle="Assess Area Screenshot's UI"
         metadata={
           <Detail.Metadata>
-            <Detail.Metadata.Label title="Report" text={"..."} />
+            <Detail.Metadata.Label title="Color Contrast" text={"..."} />
+            <Detail.Metadata.Label title="Focus visibility" text={"..."} />
+            <Detail.Metadata.Label title="Semantic structure" text={"..."} />
+            <Detail.Metadata.Label title="Clear and descriptive links" text={"..."} />
+            <Detail.Metadata.Label title="Language of the page" text={"..."} />
+            <Detail.Metadata.Label title="Responsive and reflow" text={"..."} />
           </Detail.Metadata>
         }
       />
     );
   }
-
-  return (
+  
+  return report ? (
     <Detail
-      markdown={`![Screenshot](${imagePath}?raycast-height=400)\n\n${report!}`}
-      navigationTitle="Assess Full Screenshot's UI"
+      markdown={`![Screenshot](${imagePath})`}
+      navigationTitle="Assess Area Screenshot's UI"
+      metadata={
+        <Detail.Metadata>
+          <Detail.Metadata.Label title="Color Contrast" text={report.split("C:")[1]?.split("\n")[0]?.trim()} />
+          <Detail.Metadata.Label title="Focus visibility" text={report.split("F:")[1]?.split("\n")[0]?.trim()} />
+          <Detail.Metadata.Label title="Semantic structure" text={report.split("S:")[1]?.split("\n")[0]?.trim()} />
+          <Detail.Metadata.Label
+            title="Clear and descriptive links"
+            text={report.split("C:")[2]?.split("\n")[0]?.trim()}
+          />
+          <Detail.Metadata.Label title="Language of the page" text={report.split("L:")[1]?.split("\n")[0]?.trim()} />
+          <Detail.Metadata.Label title="Responsive and reflow" text={report.split("R:")[1]?.split("\n")[0]?.trim()} />
+        </Detail.Metadata>
+      }
     />
-  );
+  ) : null;
 }
