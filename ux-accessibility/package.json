@@ -31,11 +31,13 @@
     "@raycast/utils": "^1.17.0",
     "browser-image-compression": "^2.0.2",
     "cloudinary": "^2.5.1",
+    "lodash": "^4.17.21",
     "screenshot-desktop": "^1.15.0"
   },
   "devDependencies": {
     "@raycast/eslint-config": "^1.0.11",
     "@types/imagemin": "^9.0.0",
+    "@types/lodash": "^4.17.13",
     "@types/node": "20.8.10",
     "@types/react": "18.3.3",
     "@types/screenshot-desktop": "^1.12.3",

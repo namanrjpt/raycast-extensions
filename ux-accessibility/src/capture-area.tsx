@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { join } from "path";
 import { uploadToCloudinary } from "./utils";
 
+import { debounce } from "lodash";
+
 process.env.PATH = "/usr/sbin:/usr/bin:/bin:/usr/local/bin";
 
 export default function CaptureAreaCommand() {
@@ -20,12 +22,11 @@ export default function CaptureAreaCommand() {
   const [currentLoadingText, setCurrentLoadingText] = useState(0);
   const [inBetweenCapture, setInBetweenCapture] = useState(false);
 
-  const captureAreaScreenshot = () => {
+  const captureAreaScreenshot = debounce(() => {
     if (inBetweenCapture) return;
     const tempFilePath = join(process.env.TMPDIR || "/tmp", `uic-area-ss-${new Date().getTime()}.png`);
     showHUD("Please select the area to capture...");
     setInBetweenCapture(true);
-    console.log("Executing Capture Area");
     exec(`screencapture -i ${tempFilePath}`, (err) => {
       console.log("Finished executing Capture area!");
       setInBetweenCapture(false);
@@ -38,7 +39,7 @@ export default function CaptureAreaCommand() {
       exec("open -a Raycast");
       analyzeImage(tempFilePath);
     });
-  };
+  }, 800);
 
   useEffect(() => {
     if (!inBetweenCapture) captureAreaScreenshot();
