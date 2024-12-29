@@ -117,7 +117,7 @@ export default function Command() {
     >
       {folderPath ? (
         <List.Item
-          title="Current Folder"
+          title="Give prompt for current folder"
           subtitle={folderPath}
           actions={
             <ActionPanel>
