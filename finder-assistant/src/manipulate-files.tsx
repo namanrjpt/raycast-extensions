@@ -82,10 +82,13 @@ export default function Command() {
       //   failed:<reason>
       // `
 
+      const { stdout: lsResult } = await execPromise(`cd "${folderPath}" && ls`);
+
       const thisPrompt = `
         You are a expert MacOS terminal user
         You will only respond with command for MacOS
         You will assume that we are in a folder and generate a command that achieves the following: ${searchText}
+        This is the content of the folder: ${lsResult}
         ${output ? `This is a follow up command with previous command\n${prompt}, and its output:\n${output}` : ""}
         \n
         You are not limited to only providing one command, seperate them with && to chain commands to achieve the result
@@ -100,17 +103,22 @@ export default function Command() {
         failed:{reason}
       `;
 
+      // console.log(thisPrompt);
+      
       const command = await AI.ask(thisPrompt, {
         creativity: 1.5,
       });
 
       if (command.startsWith("next:")) {
         const output = await executeCommandOnFolder(folderPath, command.split("next:")[1]);
+        console.log(command);
+        
         if(output)
           return handleExecute(command.split("next:")[1], output)
         else throw Error("Error executing command!")
       } else if (command.startsWith("success:")) {
-        await executeCommandOnFolder(folderPath, command.split("success:")[1]);
+        const output = await executeCommandOnFolder(folderPath, command.split("success:")[1]);
+        console.log(command);
         await showToast({
           style: Toast.Style.Success,
           title: "Command executed successfully",
