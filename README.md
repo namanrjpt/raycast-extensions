@@ -28,7 +28,7 @@ git clone https://github.com/namanrjpt/raycast-extensions.git
 
 - [Installation](#1-installation)
 - [Integration](#2-Integration)
-- [Usage](#3-import)
+- [Usage](#3-usage)
 
 ## 1. Installation
 After cloning, open the directory to your favorite code editor like VS Code  
@@ -70,7 +70,7 @@ All the extensions work different and may require certain environment to work co
     This is a rather straight forward extension, however this extension requires you to have Raycast PRO to use AI-powered features.  
     This extension supports two commands  
     - Capture Area
-    - Capture Full Screen
+    - Capture Full Screen  
     Both works as the name suggests, captures your screen either according to you by selecting an area, or full screen.  
     After capturing the screen, the AI analyses and generates a comprehensive Accessibility report covering following points  
     - Color contrast
