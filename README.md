@@ -89,3 +89,6 @@ All the extensions work different and may require certain environment to work co
     ````
 
     This will create 10 `.txt` files with the names of animals and add relevant content related to that animal inside that file.
+
+4. **Static Quotes**
+    This is a simple extension that randomly selects a quote from `quotes.json` and displays it in the subtitle of the extension after the extension name.
