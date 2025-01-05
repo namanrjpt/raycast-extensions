@@ -71,8 +71,7 @@ All the extensions work different and may require certain environment to work co
     This extension supports two commands  
     - Capture Area
     - Capture Full Screen  
-    Both works as the name suggests, captures your screen either according to you by selecting an area, or full screen.  
-    After capturing the screen, the AI analyses and generates a comprehensive Accessibility report covering following points  
+    Both works as the name suggests, captures your screen either according to you by selecting an area, or full screen. After capturing the screen, the AI analyses and generates a comprehensive Accessibility report covering following points  
     - Color contrast
     - Focus visibility  
     - ⁠Semantic structure  
